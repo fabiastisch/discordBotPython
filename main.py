@@ -1,31 +1,40 @@
 import asyncio
 import random
-import discord
+import sys
 
+import discord
+import logging
+import logging.config
 import SECRETS
+
+logging.config.fileConfig(fname='file.conf', disable_existing_loggers=False)
+logger = logging.getLogger(__name__)
 
 
 class MyClient(discord.Client):
 
     # Wenn der Bot sich einloggen konnte
     async def on_ready(self):
+
+        logger.info("Logged in")
         print('Eingeloggt als \n' + self.user.name + ' ' + self.user.id.__str__() + '\n -----------')
 
     # Wenn eine Reaktion hinzugefügt wird
     async def on_reaction_add(self, reaction, user):
+        logger.info("Reaction wurde hinzugefügt")
         print(reaction.emoji + '\n' + user.__str__())
 
     # Wenn eine Reaktion entfernt wird
     async def on_reaction_remove(self, reaction, user):
+        logger.info("Reaction wurde entfernt")
         print(reaction.emoji + ' Removed\n' + user.__str__())
 
     # Wenn eine Nachricht gesendet wird
     async def on_message(self, message):
-
         if message.author.id == self.user.id:
             return
+        logger.info("Nachricht wurde gesendet")
 
-        # print(message.author.id)
         ###########
         if message.content.startswith('$thumb'):
             channel = message.channel
@@ -62,17 +71,20 @@ class MyClient(discord.Client):
 
     # Wenn eine Nachricht bearbeitet wird
     async def on_message_edit(self, before, after):
+        logger.info("Nachricht wurde bearbeitet")
         msg = '**{0.author}** edited their message:\n{0.content} -> {1.content} \n in {0.channel.mention}'
         # await before.channel.send(format.format(before, after))
         await before.guild.get_member(272086128830447620).send(msg.format(before, after))
 
     # Wenn eine Nachricht gelöscht wird
     async def on_meggage_delete(self, message):
+        logger.info("Nachricht wurde entfernt")
         msg = '{0.author} has deleted the message: \n {0.content}'
         await message.guild.get_member(272086128830447620).send(msg.format(message))
 
     # Wenn ein Member den Server joint
     async def on_member_join(self, member):
+        logger.info("Member ist gejoint")
         guild = member.guild
         if guild.system_channel is not None:
             to_send = 'Willkommen {0.mention}'.format(member)
@@ -80,21 +92,25 @@ class MyClient(discord.Client):
 
     # Wenn ein Member den Server verlässt
     async def on_member_remove(self, member):
+        logger.info("Member ist geleavt")
         print('' + member.name)
 
     # Wenn ein Member das Profil updated, Wenn min. einer der folgenden Dinge sich geändert haben:
     # Status, Aktivität, Nickname, Rollen
     async def on_member_update(self, before, after):
+        logger.info("Member Update")
         print(before)
         print("to")
         print(after)
 
     # Wenn ein Member eins der folgenden updatet: Avatar, Username, Diskriminator
     async def on_user_update(self, befor, after):
+        logger.info("User Update")
         print(befor)
 
     #
     async def on_voice_state_update(self, member, before, after):
+        logger.info("Voice state Update")
         print('Voice state update')
 
 
