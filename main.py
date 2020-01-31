@@ -7,8 +7,16 @@ import logging
 import logging.config
 import SECRETS
 
-logging.config.fileConfig(fname='file.conf', disable_existing_loggers=False)
-logger = logging.getLogger(__name__)
+logging.basicConfig(filename="logs/log.log", level=logging.DEBUG)
+fh = logging.FileHandler("logs/logme.txt")
+form = logging.Formatter('%(name)s - %(levelname)s : %(asctime)s - %(message)s')
+fh.setFormatter(form)
+logger = logging.getLogger("Bot")
+handler = logging.StreamHandler(sys.stdout)
+handler.setFormatter(form)
+logger.addHandler(fh)
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
 
 
 class MyClient(discord.Client):
