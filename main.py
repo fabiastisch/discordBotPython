@@ -1,36 +1,31 @@
+import asyncio
+
 import discord
-from discord import Game, Guild, Member, Embed
-from commands import cmd_ping, STATICS
+
+import SECRETS
 
 
-@client.event
-async def on_ready():
-    print("Logged in successfully.")
-    # await client.send_message()
-    for s in client.guilds:
-        print(" - %s (%s)" % (s.name, s.id))
+class MyClient(discord.Client):
 
-    game = discord.Game("with the API")
-    await client.change_presence(activity=game, status=discord.Status.online)
+    async def on_ready(self):
+        print('Eingeloggt als \n' + self.user.name + ' ' + self.user.id.__str__() + '\n -----------')
 
+    async def on_message(self, message):
+        if message.content.startswith('!editme'):
+            msg = await message.channel.send('10')
+            await asyncio.sleep(3.0)
+            await msg.edit(content='40')
 
-@client.event
-async def on_message(message):
-    # Nicht auf eigene Nachrichten reagieren
-    if message.author =
+    async def on_message_edit(self, before, after):
+        fmt = '**{0.author}** edited their message:\n{0.content} -> {1.content}'
+        await before.channel.send(fmt.format(before, after))
 
-    if message.content.startswith(STATICS.PREFIX):
-        invoke = message.content[len(STATICS.PREFIX):].split(" ")[0]
-        args = message.content.split(" ")[len(STATICS.PREFIX):]
-        print("INVOKE: %s\nARGS: %s" % (invoke, args.__str__()))
-
-        if commands.__contains__(invoke):
-            await commands.get(invoke).ex(args, message, client, invoke)
-        else:
-            await client.send_message(message.channel, embed=Embed(color=discord.Color.red(), description=(
-                    "Die Funktion `%s` ist nicht definiert!" % invoke)))
-
-    print(message.content + " - " + message.author.name)
+    async def on_member_join(self, member):
+        guild = member.guild
+        if guild.system_channel is not None:
+            to_send = 'Willkommen {0.mention}'.format(member)
+            await guild.system_channel.send(to_send)
 
 
+client = MyClient()
 client.run(SECRETS.TOKEN)
