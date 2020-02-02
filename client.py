@@ -37,6 +37,9 @@ class MyClient(discord.Client):
             return
         logger.info("Nachricht wurde gesendet")
         logger.debug(message)
+        logger.debug(message.author)
+        user = message.author
+        print(user.activities)
         await cmd.command(message)
 
         ###########

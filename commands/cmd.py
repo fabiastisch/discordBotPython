@@ -1,6 +1,7 @@
 import myLogger
+import data.database as database
 from SETTINGS.STATICS import PREFIX
-import commands.commands as commands
+
 
 logger = myLogger.getLogger("CMD")
 
@@ -35,8 +36,15 @@ async def command(message):
                 logger.debug("fnc: COMMAND")
                 msg = msg[7:].strip()
                 cod = msg.split()
-                logger.info(cod)
 
+                logger.info(cod)
+                print(len(cod))
+                if len(cod) == 2:
+                    database.insert_command(database.Command(cod[0], cod[1]))
+                elif len(cod) == 3:
+                    database.insert_command(database.Command(cod[0], cod[1], cod[2]))
+
+                database.get_command_list()
             else:
                 return
         else:

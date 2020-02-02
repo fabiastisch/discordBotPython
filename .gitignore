@@ -1,3 +1,5 @@
 .idea
 SECRETS.py
 logs/*
+Test/*
+data/Discord.db
