@@ -1,5 +1,8 @@
 import os, sqlite3
+import myLogger
 
+logger = myLogger.getLogger("database")
+logger.debug("Database")
 FILE = 'data/Discord.db'
 
 
@@ -11,6 +14,7 @@ class Command:
 
 
 def db_anlegen():
+    logger.debug("DB anlegen")
     connection = sqlite3.connect(FILE)
     cursor = connection.cursor()
     # Tabellem erzeugen
@@ -27,12 +31,14 @@ def db_anlegen():
 
 
 def insert_command(command):
+    logger.debug("Insert command")
     connection = sqlite3.connect(FILE)
     cursor = connection.cursor()
     with connection:
         cursor.execute("SELECT name FROM commands WHERE name = :name", {'name': command.name})
         e = cursor.fetchone()
-        if e[0] == command.name:
+        if e is not None:
+            # if e[0] == command.name:
             return False
 
         cursor.execute("INSERT INTO commands VALUES (:name ,:out, :description)", {
@@ -40,6 +46,7 @@ def insert_command(command):
 
 
 def update_command(command):
+    logger.debug("update command")
     connection = sqlite3.connect(FILE)
     cursor = connection.cursor()
     with connection:
@@ -52,16 +59,17 @@ def update_command(command):
 
 
 def get_command(name):
+    logger.debug("get command")
     connection = sqlite3.connect(FILE)
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM commands WHERE name = :name", {'name': name})
     e = cursor.fetchone()
     connection.close()
-    print(e)
-    return e
+    return Command(e[0], e[1], [2])
 
 
 def get_command_list():
+    logger.debug("get command List")
     connection = sqlite3.connect(FILE)
     cursor = connection.cursor()
     cursor.execute("SELECT name FROM commands ")
@@ -73,6 +81,7 @@ def get_command_list():
 
 
 def delete_command(name):
+    logger.debug("Delete command")
     connection = sqlite3.connect(FILE)
     cursor = connection.cursor()
     with connection:
