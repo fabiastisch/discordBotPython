@@ -9,7 +9,7 @@ logger.debug("file: CMD")
 
 async def do(message, com):
     s = database.get_command(com)
-    await message.channel.send(s.out)
+    await message.channel.send(s.out, tts=s.tts)
 
 
 list = database.get_command_list()
@@ -54,14 +54,23 @@ async def command(message):
             if msg_upper.startswith("COMMAND"):
                 logger.debug("fnc: COMMAND")
                 msg = msg[7:].strip()
-                cod = msg.split()
+                cod = msg.split("~", 3)  # max 4 Elemente
+                for s in range(len(cod)):
+                    cod[s] = cod[s].strip()
+
+                if "tts" in cod[-1]:
+                    tts = True
+                    print("TTS---")
+                else:
+                    tts = False
 
                 if len(cod) == 2:
-                    ret = database.insert_command(database.Command(cod[0], cod[1]))
+                    ret = database.insert_command(database.Command(cod[0], cod[1], tts))
                 elif len(cod) == 3:
-                    ret = database.insert_command(database.Command(cod[0], cod[1], cod[2]))
+                    ret = database.insert_command(database.Command(cod[0], cod[1], tts, cod[2]))
                 else:
-                    await message.channel.send("This is not a valid usage of this command")
+                    await message.channel.send(
+                        "This is not a valid usage of this command. Use \"new command [command] ~ [output] ~ {optional} [description] ~ {optional} tts")
                     return
                 if ret is False:
                     await message.channel.send("A command with this name already exists")

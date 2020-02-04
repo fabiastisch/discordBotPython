@@ -7,11 +7,14 @@ FILE = 'data/Discord.db'
 
 
 class Command:
-    def __init__(self, name, out, description=None):
+    def __init__(self, name, out, tts, description=None):
         self.name = name
         self.out = out
         self.description = description
-
+        if tts:
+            self.tts = 1
+        else:
+            self.tts = 0
 
 def db_anlegen():
     logger.debug("DB anlegen")
@@ -23,7 +26,8 @@ def db_anlegen():
                     CREATE TABLE commands(
                         name text not null, 
                         out text,
-                        description text
+                        description text,
+                        tts integer 
                     )"""
                        )
 
@@ -41,11 +45,12 @@ def insert_command(command):
             # if e[0] == command.name:
             return False
 
-        cursor.execute("INSERT INTO commands VALUES (:name ,:out, :description)", {
-            'name': command.name, 'out': command.out, 'description': command.description})
+        cursor.execute("INSERT INTO commands VALUES (:name ,:out, :description, :tts)", {
+            'name': command.name, 'out': command.out, 'description': command.description, 'tts': command.tts})
 
 
 def update_command(command):
+    # TODO: adding TTS
     logger.debug("update command")
     connection = sqlite3.connect(FILE)
     cursor = connection.cursor()
@@ -65,7 +70,7 @@ def get_command(name):
     cursor.execute("SELECT * FROM commands WHERE name = :name", {'name': name})
     e = cursor.fetchone()
     connection.close()
-    return Command(e[0], e[1], [2])
+    return Command(e[0], e[1], e[2], e[3])
 
 
 def get_command_list():
