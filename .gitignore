@@ -1,5 +1,5 @@
 .idea
-SECRETS.py
+#SECRETS.py
 logs/*
 Test/*
 data/Discord.db

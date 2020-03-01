@@ -2,6 +2,7 @@ import asyncio
 import random
 import discord
 import SECRETS
+from discord import *
 from SETTINGS.STATICS import *
 from commands import cmd
 import myLogger
@@ -31,6 +32,15 @@ class MyClient(discord.Client):
 
     #  print(reaction.emoji + ' Removed\n' + user.__str__())
 
+    #Eine Reaktion aus dem Cache
+    async def on_raw_reaction_add(self, payload):
+        logger.info("Raw Reaction add")
+
+        channel = self.get_channel(payload.channel_id)
+        user = self.get_user(payload.user_id)
+        message = await channel.fetch_message(payload.message_id)
+        #await channel.send(str(user)+ "reacted on" + message.content + "witch" + str(payload.emoji))
+        logger.debug(str(user)+ "reacted on" + message.content + "witch" + str(payload.emoji))
     # Wenn eine Nachricht gesendet wird
     async def on_message(self, message):
         if message.author.id == self.user.id:
@@ -107,6 +117,17 @@ class MyClient(discord.Client):
     # Status, Aktivität, Nickname, Rollen
     async def on_member_update(self, before, after):
         logger.info("Member Update")
+        logger.debug(str(before.joined_at))
+        logger.debug(str(before.activites))
+        logger.debug(str(before.guild))
+        logger.debug(str(before.nick))
+        logger.debug(str(before.mobile_status))
+        logger.debug(str(before.desktop_status))
+        logger.debug(str(before.web_status))
+        logger.debug(str(before.roles))
+        logger.debug(str(before.avatar))
+
+
 
     #   print(before)
     #   print("to")
